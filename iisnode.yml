@@ -1,0 +1,3 @@
+nodeProcessCommandLine: "D:\Program Files\nodejs\14.16.0\node.exe"
+loggingEnabled: false
+logDirectory: iisnode

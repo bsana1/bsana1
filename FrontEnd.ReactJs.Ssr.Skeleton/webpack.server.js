@@ -4,14 +4,18 @@ const webpackNodeExternals = require('webpack-node-externals');
 
 function getServerBundleFileName() {
   if (process.env.AZURE_ENV === "prod") {
-    return "si3d-coordinator-server.prod.js";
+    return "ssr-server.prod.js";
   }
 
   if (process.env.AZURE_ENV === "ppe") {
-    return "si3d-coordinator-server.ppe.js";
+    return "ssr-server.ppe.js";
   }
 
-  return "si3d-coordinator-server.js";
+  if (process.env.AZURE_ENV === "dev") {
+    return "ssr-server.dev.js";
+  }
+
+  return "ssr-server.js";
 }
 
 module.exports = {

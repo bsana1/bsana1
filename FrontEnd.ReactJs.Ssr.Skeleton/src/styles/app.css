@@ -1,0 +1,12 @@
+/* Remove default edge margin */ 
+body {
+    margin: 0;
+}
+
+*{
+    -webkit-tap-highlight-color: transparent;
+}
+
+*:focus {
+    outline: 0;
+}

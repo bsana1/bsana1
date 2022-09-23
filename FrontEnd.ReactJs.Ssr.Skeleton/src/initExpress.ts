@@ -3,7 +3,7 @@ import path from 'path';
 
 const initExpress = (app: Express.Application, handleNonStaticRequest: (req: any, res: any) => void, workingDir: string): void => {
     // If you provide a relative path to express.static() it is relative to the directory from where you launch the node process.
-    // But when running IIS, we launch node from the root /build folder (the folder containing the si3d-coordinator-server.js file),
+    // But when running IIS, we launch node from the root /build folder (the folder containing the ssr-server.js file),
     // but when running locally we launch from the root /ShopIn3d.Coordinator folder. So to protect against this difference, we
     // use make this an absolute path, and workingDir in this case should be the /build folder.
     // https://expressjs.com/en/starter/static-files.html
@@ -14,7 +14,7 @@ const initExpress = (app: Express.Application, handleNonStaticRequest: (req: any
 
     // Add response headers to all responses
     app.use(function (req, res, next) {
-        res.header('X-Si3d-Coordinator-Version', process.env.SI3D_COORDINATOR_VERSION);
+        res.header('X-Ssr-Server-Version', process.env.SI3D_COORDINATOR_VERSION);
         next();
     });
 

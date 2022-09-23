@@ -1,18 +1,10 @@
-# shop-in-3d.Coordinator  
+# About
 
-![Team](https://img.shields.io/badge/rex-shop--in--3d-blue)
-[![Contact](Engineering - Shop-In-3D squad)]( <f0a533ff.microsoft.com@amer.teams.ms>)
-
-The Coordinator is a ReactJS FE server, running on NodeJS, which powers the Shop-In-3d experience across Microsoft partners and Vendor.
-
-## References
-
-* [ShopIn3d - Widget Architecture](https://microsoft.sharepoint.com/:w:/t/shop-in-3d-babylonjs-vendors/EazCziImcChLlXdyjTBlLSEBoyPvehvr9alUNg8mRbRm_g?e=ufYQw8)
-* [ShopIn3d - FE Coordinator Spec](https://microsoft.sharepoint.com/:w:/t/shop-in-3d-babylonjs-vendors/Eb6XftNXJWJHlQ2VYabqcEgB7o2oo4yOrlmX_iF7Ua7v9w?e=be953W)
+This project defines a skeleton, working FE service, running reactJS on nodeJS with SSR enabled. It's also configure to support typescript, and commonly used assets (png, svgs and jpegs).
 
 # Deployment
 
-The coordinator service supports 3 different environments:
+3 different environments are supported:
  - DEV: Changes commit to master are automatically deployed to the dev environment
  - PPE: Typically used for demos, or cross-teams testing builds.
  - PROD: Production code. Requires approval for deployment.
@@ -29,40 +21,6 @@ There are 2 files in our project which controls specific settings on iis for our
 Beware that there is little documentation iisnode. In general, we found that settings applied to web.config iis services apply equally to iisnode.
 Also, note that IIS upfronts all traffic to our node service. Meaning it might actually prevent requests from reaching our service, if improperly configured.
 
-# Git repo
-
-The coordinator source can be found in the [CSME-Stores-DM-ISE-TheeDProductsCore](https://microsoftit.visualstudio.com/OneITVSO/_git/CSME-Stores-DM-ISE-ThreeDProductsCore?version=GBmaster&_a=contents) repository. Navigate to the `ShopIn3d.Coordinator` folder to access the source.
-
-## Build pipeline
-Our [azure build pipeline script](/ShopIn3d.Coordinator/coordinator-build.yml) lists a set of steps to produce the coordinator artifacts. 
-
-Generally, our build pipeline performs the following steps:
-- go to the coordinator root
-- npm install: installs all node dependencies
-- npm run build: produces 6 webpack bundles
-    * si3d-coordinator-client.js
-    * si3d-coordinator-server.js
-    * si3d-coordinator-client.ppe.js
-    * si3d-coordinator-server.ppe.js
-    * si3d-coordinator-client.prod.js
-    * si3d-coordinator-server.prod.js
-- Run all tests.
-- Publishes the code coverage.
-- Download SI3D player artifact to the project folder. This is produces the by ShopIn3d.Player project, when commiting to master.
-- Unzip the 3D player artifact locally.
-- Rename the player bundle, to its corresponding to each environment (e.g., si3d.player.bundle.dev.js for the dev environment).
-- Copies the 3d player bundle to the /dist folder. 
-- Copies .env files from the player to the local /dist folder (required player static assets).
-- Copies .css files from the player to the local /dist folder (required player static assets).
-- Zip all files as the DEV artifact.
-- Overwrites the si3d-coordinator.server.js with the content of si3d-coordinator-server.ppe.js. This is required because our npm start command looks for the bundle named si3d-coordinator-server.js, regardless the environment.
-- Zip all files as the PPE artifact.
-- Overwrites the si3d-coordinator.server.js with the content of si3d-coordinator-server.prod.js.
-- Zip all files as the PROD artifact.
-- Publish all artifacts.
-
-You can verify all build runs for coordianator in the [Azure build pipeline](https://microsoftit.visualstudio.com/OneITVSO/_build?view=runs)
-
 # Development
 The coordinator is node service, running ReactJS + redux, with SSR (Server-Side rendering).
 
@@ -78,7 +36,7 @@ In our webpack scripts, we use the npm [dot-env](https://www.npmjs.com/package/d
 When running the server, the server bundle is passed as an input parameter  via "npm run start" script to the node process. 
 The server then uses server-side rendereing to pre-fetch the core-api experience data and pre-produce the returned HTML.
 
-The returned HTML is defined by the [rendered.js](/ShopIn3d.Coordinator/src/helpers/renderer.js), and contains an HTML script tag which loads the client bundle.
+The returned HTML is defined by the [renderer.js](/ShopIn3d.Coordinator/src/helpers/renderer.js), and contains an HTML script tag which loads the client bundle.
 
 ## Local dev .NPMRC updates
 

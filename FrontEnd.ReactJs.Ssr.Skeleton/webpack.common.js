@@ -25,14 +25,19 @@ function getEnvFile() {
 
 function getClientCssFileName() {
   if (process.env.AZURE_ENV === "prod") {
-    return "si3d-coordinator-client.prod.css";
+    return "ssr-client.prod.css";
   }
 
   if (process.env.AZURE_ENV === "ppe") {
-    return "si3d-coordinator-client.ppe.css";
+    return "ssr-client.ppe.css";
   }
 
-  return "si3d-coordinator-client.css";
+  if (process.env.AZURE_ENV === "dev") {
+    return "ssr-client.dev.css";
+  }
+
+
+  return "ssr-client.css";
 }
 
 function getPlugins() {
@@ -45,7 +50,7 @@ function getPlugins() {
     }),
     gitRevisionPlugin,
     new webpack.DefinePlugin({
-      'process.env.SI3D_COORDINATOR_VERSION': JSON.stringify(`si3d-coordinator-v-${gitRevisionPlugin.version()}`),
+      'process.env.CLIENT_VERSION': JSON.stringify(`ssr-client-version-${gitRevisionPlugin.version()}`),
       'process.env.LASTCOMMITDATETIME': JSON.stringify(gitRevisionPlugin.lastcommitdatetime()),
     })
   ]

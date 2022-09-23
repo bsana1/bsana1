@@ -7,7 +7,6 @@ import renderer from './helpers/renderer';
 import { createStoreInstance } from './store/store';
 import routes from './routes';
 import { logError, logger } from './utils/app-insights-middleware/core';
-import getLanguageFromPath from './utils/getLanguageFromPath';
 
 import initExpress from './initExpress';
 import initStore from './initStore';
@@ -41,53 +40,46 @@ const handleNonStaticRequest = (req, res) => {
   // parse the query string
   const queryObject = url.parse(req.url, true).query;
 
-  // Detect the requested language. Note that if the language has been specified on the query, that takes precedence.
-  let language = getLanguageFromPath(url.parse(req.url, true).path);
-  if (queryObject.language && queryObject.language.length > 0) {
-    language = queryObject.language;
-  }
+  // check for required query params
 
-  if (!queryObject || !queryObject.experienceId || queryObject.experienceId.length === 0) {
-    res.status(422).send('experienceId is required');
-  }
-  else if (!queryObject || !queryObject.clientId || queryObject.clientId.length === 0) {
-    res.status(403).send('clientId is required');
-  }
-  else {
-    // Note: do not use the default instance of the store, otherwise its state will be 
-    // set to the last request/experience processed, as its instance is never disposed on the server. 
-    // Always re-create the store to assure a fresh state.
-    const store = createStoreInstance();
-    const { dispatch } = store;
+  // Example query params check
+  //if (!queryObject || !queryObject.experienceId || queryObject.experienceId.length === 0) {
+    //return res.status(422).send('experienceId is required');
+  //}
 
-    const matches = matchRoutes(routes, req.path);
-    const promises =
-      matches &&
-      matches.map(({ route }) => {
-          return [
-          route.loadData ? dispatch(route.loadData(queryObject.experienceId, language)) : null,
-        ]
-      }).flat();
+  // Note: do not use the default instance of the store, otherwise its state will be 
+  // set to the last request/experience processed, as its instance is never disposed on the server. 
+  // Always re-create the store to assure a fresh state.
+  const store = createStoreInstance();
+  const { dispatch } = store;
 
-    Promise.all(promises)
-      .then( () => { 
-        // Initial redux store with the default device, colors sizes and accessories values.
-        // This is required because in SSR the useEffect hooks are ignored, so the initialization  
-        // must happen on the server side so that the rendered HTML
-        // contains all expected elements on the page, as most component props are pulled from our redux store.
-        initStore(store);
-      })
-      .then ( () => {
-        const storeState = store.getState();
-        const content = renderer(req, store, storeState);
-        res.send(content);
+  const matches = matchRoutes(routes, req.path);
+  const promises =
+    matches &&
+    matches.map(({ route }) => {
+      return [
+        route.loadData ? dispatch(route.loadData(queryObject.experienceId)) : null,
+      ]
+    }).flat();
 
-      })
-      .catch(e => {
-        console.error('Error processing route', e);
-        res.status(500).send(`Server Error while processing request.  [Exception: ${e}]`);
-      });
-  }
+  Promise.all(promises)
+    .then(() => {
+      // Initial redux store with the default device, colors sizes and accessories values.
+      // This is required because in SSR the useEffect hooks are ignored, so the initialization  
+      // must happen on the server side so that the rendered HTML
+      // contains all expected elements on the page, as most component props are pulled from our redux store.
+      initStore(store);
+    })
+    .then(() => {
+      const storeState = store.getState();
+      const content = renderer(req, store, storeState);
+      res.send(content);
+
+    })
+    .catch(e => {
+      console.error('Error processing route', e);
+      res.status(500).send(`Server Error while processing request.  [Exception: ${e}]`);
+    });
 };
 
 initExpress(app, handleNonStaticRequest, __dirname);

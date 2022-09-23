@@ -3,14 +3,14 @@ const webpackCommon = require('./webpack.common');
 
 function getClientBundleFileName() {
   if (process.env.AZURE_ENV === "prod") {
-    return "si3d-coordinator-client.prod.js";
+    return "ssr-client.prod.js";
   }
 
   if (process.env.AZURE_ENV === "ppe") {
-    return "si3d-coordinator-client.ppe.js";
+    return "ssr-client.ppe.js";
   }
 
-  return "si3d-coordinator-client.js";
+  return "ssr-client.js";
 }
 
 module.exports = {
